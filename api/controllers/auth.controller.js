@@ -20,7 +20,6 @@ export const signUp = async (req, res, next) => {
 // Sign in controller
 export const signIn = async (req, res, next) => {
     const { email, password } = req.body;
-    console.log(email, password)
     try{
         const user = await User.findOne({ email });// find user by email
         if(!user) return next(errorHandler(404, "User not found"));

@@ -1,12 +1,13 @@
 
 import { useState } from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 
 export default function SignUp() {
     const [formData, setFormData] = useState({});//state to store form data
     
     const [error, setError] = useState(false);//state to store error message
     const [success, setSuccess] = useState(false);//state to store success message
+    const navigate = useNavigate();//navigate function to navigate to another page
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.id]: e.target.value
         });//update form data state
@@ -30,8 +31,9 @@ export default function SignUp() {
             if (data.success === false) {
                 setError(true);//set error state
                 return;
-            }/*if the response is not successful, set error state*/
-            location.reload();//reload the page
+            }
+            // navigate to home page if sign in is successful
+            navigate('/');
         }
             catch(error) {
                 setSuccess(false);
