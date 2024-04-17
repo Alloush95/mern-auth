@@ -22,7 +22,7 @@ export const signIn = async (req, res, next) => {
     const { email, password } = req.body;
     try{
         const user = await User.findOne({ email });// find user by email
-        if(!user) return next(errorHandler(404, "User not found"));
+        if(!user) return next(errorHandler(404, "User username or password is incorrect"));
 
         const validPassword = await bcrypt.compare(password, user.password); // compare password with hashed password
         if(!validPassword) return next(errorHandler(401, "username or password is incorrect"));

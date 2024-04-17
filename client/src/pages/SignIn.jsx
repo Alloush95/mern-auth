@@ -1,13 +1,17 @@
 
 import { useState } from 'react';
 import {Link, useNavigate} from 'react-router-dom';
+import {loginStart, loginSuccess, loginFailure} from '../redux/user/userSlice';
+import {useDispatch, useSelector} from 'react-redux';
+
 
 export default function SignIn() {
     const [formData, setFormData] = useState({});//state to store form data
-    
-    const [error, setError] = useState(false);//state to store error message
-    const [success, setSuccess] = useState(false);//state to store success message
-    const navigate = useNavigate();//navigate function to navigate to another page
+    const {success, error} = useSelector((state) => state.user);//select success and error state from user slice
+
+    const navigate = useNavigate();//navigate function to navigate to another page 
+    const dispatch = useDispatch();//dispatch function to dispatch actions to redux store
+    //function to handle form data change event
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.id]: e.target.value
         });//update form data state
@@ -16,8 +20,7 @@ export default function SignIn() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            setSuccess(true);//set success state
-            setError(false);//reset error state
+           dispatch(loginStart());//dispatch login start action
             const response = await fetch('/api/auth/sign-in', {
                 method: 'POST',
                 headers: {
@@ -26,18 +29,18 @@ export default function SignIn() {
                 body: JSON.stringify(formData)
             });
             const data = await response.json();
-
-            setSuccess(false);//reset success state
+            
+            
             if (data.success === false) {
-                setError(true);//set error state
+               dispatch(loginFailure(data)); //dispatch login success action
                 return;
             }
+            dispatch(loginSuccess(data));//dispatch login success action
             // navigate to home page if sign in is successful
             navigate('/');
         }
             catch(error) {
-                setSuccess(false);
-                setError(true);
+                dispatch(loginFailure(error));//dispatch login failure action
             }
 
     }
@@ -56,7 +59,7 @@ export default function SignIn() {
             <Link to={"/sign-up"}><span className="text-blue-500">sign up</span></Link>
             
         </div>
-        <p className="text-red-700 mt-5">{error && 'Something went wrong'}</p>
+        <p className="text-red-700 mt-5">{error ? error.message || 'Something went wrong' : ""}</p>
     </div>
   )
 }
