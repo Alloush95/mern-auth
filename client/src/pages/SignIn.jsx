@@ -32,7 +32,7 @@ export default function SignIn() {
             
             
             if (data.success === false) {
-               dispatch(loginFailure(data)); //dispatch login success action
+               dispatch(loginFailure(data)); //dispatch login failure action
                 return;
             }
             dispatch(loginSuccess(data));//dispatch login success action
@@ -56,7 +56,8 @@ export default function SignIn() {
         </form>
         <div className="flex gap-2 mt-5">
             <p>Don't have an acount?</p>
-            <Link to={"/sign-up"}><span className="text-blue-500">sign up</span></Link>
+            <Link to={"/sign-up"}><span className=
+            "text-blue-500">sign up</span></Link>
             
         </div>
         <p className="text-red-700 mt-5">{error ? error.message || 'Something went wrong' : ""}</p>
