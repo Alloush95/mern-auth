@@ -1,43 +1,50 @@
-import { GoogleAuthProvider, signInWithPopup, getAuth } from '@firebase/auth'
+import { GoogleAuthProvider, signInWithPopup, getAuth } from '@firebase/auth';
 import { app } from '../firebase';
-import {useDispatch} from 'react-redux'
+import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../redux/user/userSlice';
-import {useNavigate} from 'react-router-dom'
-
+import { useNavigate } from 'react-router-dom';
 
 export default function OAuth() {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const handelGoogleClick = async () =>{
-        
-        try {
-            const provider = new GoogleAuthProvider()
-            const auth = getAuth(app);
-            const result = await signInWithPopup(auth,provider)
-            const res = await fetch('api/auth/google',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json',
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-                },
-                body:JSON.stringify({
-                    name:result.user.displayName,
-                    email:result.user.email,
-                    photoURL:result.user.photoURL,
-                })
-            })
-            const data = await res.json()
-            console.log(data)
-            dispatch(loginSuccess(data))
-            navigate('/')
-            
+  const handleGoogleClick = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const auth = getAuth(app);
+      const result = await signInWithPopup(auth, provider);
 
-            
-        } catch (error) {
-            console.log('could not login with google',error)
-        }
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: result.user.displayName,
+          email: result.user.email,
+          photoURL: result.user.photoURL,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to authenticate with server');
+      }
+
+      const data = await res.json();
+      dispatch(loginSuccess(data));
+      
+    } catch (error) {
+      console.error('Could not login with Google:', error);
     }
+  };
+
   return (
-    <button type='button' onClick={handelGoogleClick} className="bg-red-700 text-white rounded-lg p-3 uppercase hover:opacity-95">Continue with google</button>
-  )
+    <button
+      type='button'
+      onClick={handleGoogleClick}
+      className="bg-red-700 text-white rounded-lg p-3 uppercase hover:opacity-95"
+    >
+      Continue with Google
+    </button>
+  );
 }
